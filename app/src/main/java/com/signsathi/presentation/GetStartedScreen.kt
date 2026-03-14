@@ -1,5 +1,7 @@
 package com.signsathi.presentation
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -60,10 +63,16 @@ import com.signsathi.ui.theme.nunito
 fun GetStartedScreen(
     navController: NavController,
     onGetStarted: () -> Unit = { navController.navigate(Screens.SignUp.route) },
-    onAlreadyHaveAccount: () -> Unit = { navController.navigate(Screens.Login.route) },
+    onAlreadyHaveAccount: () -> Unit = { navController.navigate(Screens.Login.route){launchSingleTop = true} },
     onTermsOfService: () -> Unit = {},
     onPrivacyPolicy: () -> Unit = {}
 ) {
+
+    val activity = LocalContext.current as? Activity
+    BackHandler {
+        activity?.finish()   // exits app on back press
+    }
+
     var termsAccepted by remember { mutableStateOf(true) }
     Box(
         modifier = Modifier

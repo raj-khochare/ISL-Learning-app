@@ -77,4 +77,6 @@ dependencies {
     //timber
     implementation("com.jakewharton.timber:timber:5.0.1")
 
+    implementation("com.amplifyframework:aws-auth-cognito:2.14.0")
+    implementation("com.amplifyframework:core-kotlin:2.14.0")
 }

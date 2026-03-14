@@ -26,13 +26,16 @@ import androidx.compose.material.icons.filled.CorporateFare
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,11 +52,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.signsathi.components.CustomButton
 import com.signsathi.components.CustomTextField
+import com.signsathi.navigationGraph.Screens
 import com.signsathi.ui.theme.Background
 import com.signsathi.ui.theme.DarkGrey
 import com.signsathi.ui.theme.Orange
 import com.signsathi.ui.theme.TextBlack
 import com.signsathi.ui.theme.nunito
+import com.signsathi.utils.UiState
 
 @Composable
 //@Preview
@@ -61,6 +66,28 @@ fun LoginScreen(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
+
+    val authState = viewModel.authState.value
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // navigation & error handling
+    LaunchedEffect(authState) {
+        when (authState) {
+            is UiState.Error -> {
+                snackbarHostState.showSnackbar(authState.message)
+                viewModel.resetState()
+            }
+            is UiState.Success -> {
+                navController.navigate(Screens.Home.route) {
+                    popUpTo(Screens.GetStarted.route) {
+                        inclusive = true   // ← removes GetStarted too
+                    }
+                }
+            }
+            else -> Unit
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -117,10 +144,20 @@ fun LoginScreen(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 20.dp)
         )
 
+        if (authState is UiState.Loading) {
+            CircularProgressIndicator(
+                color = Orange,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+
+
         //sign in button
         CustomButton(
             text = "SIGN IN ",
-            onClick = {}
+            onClick = {
+                if (authState !is UiState.Loading) viewModel.signIn()
+            }
         )
 
         Text(
@@ -136,7 +173,7 @@ fun LoginScreen(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
-                ) { }
+                ) { viewModel.forgotPassword() }
         )
 
         Spacer(modifier = Modifier.weight(1f))
