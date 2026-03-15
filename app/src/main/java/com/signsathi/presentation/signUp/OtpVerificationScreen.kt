@@ -37,8 +37,7 @@ import com.signsathi.utils.UiState
 
 @Composable
 fun OtpVerificationScreen(
-    navController: NavController,
-    viewModel: SignUpViewModel = hiltViewModel()  // same instance passed via nav
+    navController: NavController
 ) {
 
     val signUpBackStackEntry = remember(navController) {

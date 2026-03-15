@@ -10,8 +10,5 @@ import androidx.navigation.NavController
 fun HomeScreen (
     navController: NavController
 ){
-    val activity = LocalContext.current as? Activity
-    BackHandler {
-        activity?.finish()   // exits app on back press
-    }
+    
 }
