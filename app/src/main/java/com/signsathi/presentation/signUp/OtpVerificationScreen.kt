@@ -1,5 +1,6 @@
 package com.signsathi.presentation.signUp
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.signsathi.components.CustomButton
-import com.signsathi.components.CustomTextField
+import com.signsathi.utils.components.CustomButton
+import com.signsathi.utils.components.CustomTextField
 import com.signsathi.navigationGraph.Screens
 import com.signsathi.ui.theme.Background
 import com.signsathi.ui.theme.DarkGrey
@@ -35,6 +36,7 @@ import com.signsathi.ui.theme.Orange
 import com.signsathi.ui.theme.nunito
 import com.signsathi.utils.UiState
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun OtpVerificationScreen(
     navController: NavController

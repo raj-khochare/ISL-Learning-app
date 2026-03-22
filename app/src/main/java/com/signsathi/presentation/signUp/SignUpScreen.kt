@@ -30,15 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.signsathi.components.CustomButton
-import com.signsathi.components.CustomTextField
 import com.signsathi.navigationGraph.Screens
 import com.signsathi.ui.theme.Background
 import com.signsathi.ui.theme.DarkGrey
 import com.signsathi.ui.theme.Orange
 import com.signsathi.ui.theme.nunito
 import com.signsathi.utils.UiState
-
+import com.signsathi.utils.components.CustomButton
+import com.signsathi.utils.components.CustomTextField
 
 @Composable
 fun SignUpScreen(
@@ -49,16 +48,12 @@ fun SignUpScreen(
     val showOtpScreen = viewModel.showOtpScreen.value
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // FIX: was duplicated — one block navigated AND reset, the second navigated again
+    // without resetting, causing a double-navigate on recomposition.
     LaunchedEffect(showOtpScreen) {
         if (showOtpScreen) {
             navController.navigate(Screens.OtpVerification.route)
-            viewModel.resetOtpNavigation()  // ← reset flag after navigating
-        }
-    }
-    // When signUp() succeeds → showOtpScreen becomes true → navigate
-    LaunchedEffect(showOtpScreen) {
-        if (showOtpScreen) {
-            navController.navigate(Screens.OtpVerification.route)
+            viewModel.resetOtpNavigation()
         }
     }
 
@@ -92,7 +87,7 @@ fun SignUpScreen(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier.align(Alignment.CenterStart)
                 ) {
-                    Icon(imageVector = Icons.Filled.Close, contentDescription = "close")
+                    Icon(imageVector = Icons.Filled.Close, contentDescription = "Close sign up")
                 }
                 Text(
                     text = "Create Account",
@@ -109,8 +104,7 @@ fun SignUpScreen(
             CustomTextField(
                 input = viewModel.emailText.value,
                 label = "Email",
-                onValueChange = {
-                    viewModel.setEmailText(it) },
+                onValueChange = { viewModel.setEmailText(it) },
                 modifier = Modifier.padding(16.dp)
             )
             CustomTextField(

@@ -1,7 +1,7 @@
 package com.signsathi.presentation
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,11 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -37,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -59,21 +55,26 @@ import com.signsathi.ui.theme.Orange
 import com.signsathi.ui.theme.TextBlack
 import com.signsathi.ui.theme.nunito
 
+// FIX: hardcoded Unicode emoji strings moved to named constants.
+// Ideally these move to strings.xml as string resources, but keeping
+// them here as constants is already a big improvement over inline literals.
+private const val WAVE_EMOJI = "\uD83D\uDC4B\uFE0F"   // 👋
+
 @Composable
 fun GetStartedScreen(
     navController: NavController,
     onGetStarted: () -> Unit = { navController.navigate(Screens.SignUp.route) },
-    onAlreadyHaveAccount: () -> Unit = { navController.navigate(Screens.Login.route){launchSingleTop = true} },
+    onAlreadyHaveAccount: () -> Unit = {
+        navController.navigate(Screens.Login.route) { launchSingleTop = true }
+    },
     onTermsOfService: () -> Unit = {},
     onPrivacyPolicy: () -> Unit = {}
 ) {
-
-    val activity = LocalContext.current as? Activity
-    BackHandler {
-        activity?.finish()   // exits app on back press
-    }
+    val activity = LocalActivity.current
+    BackHandler { activity?.finish() }
 
     var termsAccepted by remember { mutableStateOf(true) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +86,6 @@ fun GetStartedScreen(
                 .fillMaxSize()
                 .padding(horizontal = 18.dp)
                 .padding(top = 80.dp, bottom = 36.dp),
-//                .background(Color.Red),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -93,13 +93,14 @@ fun GetStartedScreen(
                     withStyle(SpanStyle(color = TextBlack)) {
                         append("Welcome\nto SignSathi")
                     }
-                    append("\uD83D\uDC4B\uFE0F")
+                    // FIX: replaced inline unicode literal with named constant
+                    append(WAVE_EMOJI)
                 },
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
-
                 modifier = Modifier.fillMaxWidth()
             )
+
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
@@ -108,16 +109,17 @@ fun GetStartedScreen(
                 color = DarkGrey,
                 textAlign = TextAlign.Center,
             )
+
             Spacer(modifier = Modifier.height(40.dp))
 
             Image(
                 painter = painterResource(id = R.drawable.on_boarding_image),
-                contentDescription = "Welcome Image",
+                contentDescription = "Welcome illustration",
                 modifier = Modifier.size(380.dp)
             )
+
             Spacer(modifier = Modifier.weight(1f))
 
-            // ── Get Started Button ────────────────────────────────────────────
             Button(
                 onClick = onGetStarted,
                 enabled = termsAccepted,
@@ -140,13 +142,11 @@ fun GetStartedScreen(
                         fontWeight = FontWeight.Bold,
                         fontFamily = nunito
                     )
-
                 )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // ── Already Have Account ──────────────────────────────────────────
             Text(
                 text = "I already have an account",
                 style = TextStyle(
@@ -163,7 +163,6 @@ fun GetStartedScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // ── Terms & Privacy Checkbox ──────────────────────────────────────
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -184,7 +183,6 @@ fun GetStartedScreen(
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
-
 
                 Text(
                     text = buildAnnotatedString {
@@ -221,8 +219,8 @@ fun GetStartedScreen(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
-                        // Ideally detect which span was tapped using ClickableText
-                        // For simplicity, route both to respective callbacks
+                        // TODO: detect which span was tapped using ClickableText
+                        // and route to onTermsOfService() / onPrivacyPolicy() accordingly
                     }
                 )
             }

@@ -1,4 +1,4 @@
-package com.signsathi.components
+package com.signsathi.utils.components
 
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.PaddingValues

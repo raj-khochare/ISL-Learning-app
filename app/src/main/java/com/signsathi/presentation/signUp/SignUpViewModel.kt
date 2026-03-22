@@ -1,5 +1,6 @@
 package com.signsathi.presentation.signUp
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,7 +8,6 @@ import com.signsathi.data.repository.AuthRepository
 import com.signsathi.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.State
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +27,6 @@ class SignUpViewModel @Inject constructor(
     private val _otpCode = mutableStateOf("")
     val otpCode: State<String> = _otpCode
 
-    // controls whether to show OTP screen
     private val _showOtpScreen = mutableStateOf(false)
     val showOtpScreen: State<Boolean> = _showOtpScreen
 
@@ -39,27 +38,39 @@ class SignUpViewModel @Inject constructor(
     fun setConfirmPassword(password: String) { _confirmPasswordText.value = password }
     fun setOtpCode(code: String) { _otpCode.value = code }
     fun resetState() { _authState.value = UiState.Idle }
-
     fun resetOtpNavigation() { _showOtpScreen.value = false }
 
     fun signUp() {
-        if (_passwordText.value != _confirmPasswordText.value) {
-            _authState.value = UiState.Error("Passwords do not match")
-            return
+        val email = _emailText.value.trim()
+        val password = _passwordText.value
+        val confirm = _confirmPasswordText.value
+
+        // FIX: added email format check alongside the existing field checks
+        when {
+            email.isBlank() || password.isBlank() -> {
+                _authState.value = UiState.Error("Fields cannot be empty")
+                return
+            }
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                _authState.value = UiState.Error("Please enter a valid email address")
+                return
+            }
+            password.length < 8 -> {
+                _authState.value = UiState.Error("Password must be at least 8 characters")
+                return
+            }
+            password != confirm -> {
+                _authState.value = UiState.Error("Passwords do not match")
+                return
+            }
         }
-        if (_emailText.value.isBlank() || _passwordText.value.isBlank()) {
-            _authState.value = UiState.Error("Fields cannot be empty")
-            return
-        }
+
         viewModelScope.launch {
             _authState.value = UiState.Loading
-            authRepository.signUp(
-                email = _emailText.value.trim(),
-                password = _passwordText.value
-            )
+            authRepository.signUp(email = email, password = password)
                 .onSuccess {
                     _authState.value = UiState.Idle
-                    _showOtpScreen.value = true   // navigate to OTP screen
+                    _showOtpScreen.value = true
                 }
                 .onFailure {
                     _authState.value = UiState.Error(it.message ?: "Sign up failed")
@@ -68,11 +79,16 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun confirmSignUp() {
+        val code = _otpCode.value.trim()
+        if (code.length != 6 || !code.all { it.isDigit() }) {
+            _authState.value = UiState.Error("Enter the 6-digit code from your email")
+            return
+        }
         viewModelScope.launch {
             _authState.value = UiState.Loading
             authRepository.confirmSignUp(
                 email = _emailText.value.trim(),
-                code = _otpCode.value.trim()
+                code = code
             )
                 .onSuccess { _authState.value = UiState.Success }
                 .onFailure { _authState.value = UiState.Error(it.message ?: "Verification failed") }
