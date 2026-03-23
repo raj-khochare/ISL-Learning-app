@@ -30,6 +30,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -50,6 +51,7 @@ import com.signsathi.data.model.LessonNode
 import com.signsathi.data.model.LessonUnit
 import com.signsathi.data.model.NodeState
 import com.signsathi.data.model.UserProgress
+import com.signsathi.presentation.components.BottomNavBar
 import com.signsathi.ui.theme.Background
 import com.signsathi.ui.theme.DarkGrey
 import com.signsathi.ui.theme.Orange
@@ -79,41 +81,46 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background)
-            .statusBarsPadding()
-    ) {
-        when (val state = uiState) {
-            is HomeUiState.Loading -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Orange)
+    Scaffold(
+        bottomBar = { BottomNavBar(navController = navController) },
+        containerColor = Background
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(Background)
+                .statusBarsPadding()
+        ) {
+            when (val state = uiState) {
+                is HomeUiState.Loading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = Orange)
+                    }
                 }
-            }
 
-            is HomeUiState.Error -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = state.message,
-                        style = TextStyle(fontFamily = nunito, color = DarkGrey)
-                    )
+                is HomeUiState.Error -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = state.message,
+                            style = TextStyle(fontFamily = nunito, color = DarkGrey)
+                        )
+                    }
                 }
-            }
 
-            is HomeUiState.Success -> {
-                TopStatsBar(progress = state.progress)
+                is HomeUiState.Success -> {
+                    TopStatsBar(progress = state.progress)
 
-                PullToRefreshBox(
-                    isRefreshing = state.isRefreshing,
-                    onRefresh = { viewModel.forceRefresh() },
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    LessonPath(
-                        units = state.units,
-                        onNodeClick = { viewModel.onLessonClick(it) }
-                    )
+                    PullToRefreshBox(
+                        isRefreshing = state.isRefreshing,
+                        onRefresh = { viewModel.forceRefresh() },
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        LessonPath(
+                            units = state.units,
+                            onNodeClick = { viewModel.onLessonClick(it) }
+                        )
+                    }
                 }
             }
         }
@@ -127,7 +134,7 @@ private fun TopStatsBar(progress: UserProgress) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+            .padding(horizontal = 50.dp, vertical = 5.dp),
         horizontalArrangement = Arrangement.spacedBy(24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
