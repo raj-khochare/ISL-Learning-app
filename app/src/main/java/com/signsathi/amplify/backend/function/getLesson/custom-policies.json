@@ -1,0 +1,12 @@
+[
+  {
+    "Action": [
+      "dynamodb:Scan",
+      "dynamodb:Query",
+      "dynamodb:GetItem"
+    ],
+    "Resource": [
+      "arn:aws:dynamodb:ap-south-1:*:table/signsathi-lessons"
+    ]
+  }
+]

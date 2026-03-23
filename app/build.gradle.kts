@@ -42,6 +42,10 @@ android {
         compose = true
         buildConfig = true
     }
+
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
 }
 
 dependencies {
@@ -77,6 +81,22 @@ dependencies {
     //timber
     implementation("com.jakewharton.timber:timber:5.0.1")
 
+    //amplify
     implementation("com.amplifyframework:aws-auth-cognito:2.14.0")
     implementation("com.amplifyframework:core-kotlin:2.14.0")
+
+    // Room - local cache database
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+
+// Retrofit - HTTP client for API calls
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+// OkHttp logging - see API requests in Logcat during development
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    implementation("com.amazonaws:aws-android-sdk-apigateway-core:2.73.0")
 }

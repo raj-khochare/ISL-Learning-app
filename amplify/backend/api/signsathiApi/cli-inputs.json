@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "paths": {
+    "/lessons": {
+      "name": "/lessons",
+      "lambdaFunction": "getLessons",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "read"
+        ]
+      }
+    },
+    "/progress": {
+      "name": "/progress",
+      "lambdaFunction": "getUserProgress",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "read"
+        ]
+      }
+    }
+  }
+}
