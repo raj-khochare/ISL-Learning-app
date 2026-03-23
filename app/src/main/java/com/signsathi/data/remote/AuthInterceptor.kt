@@ -1,5 +1,6 @@
 package com.signsathi.data.remote
 
+import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
 import com.amplifyframework.kotlin.core.Amplify
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -32,15 +33,8 @@ class AuthInterceptor @Inject constructor() : Interceptor {
 
     private suspend fun fetchToken(): String {
         return try {
-            val session = Amplify.Auth.fetchAuthSession()
-            // Amplify returns the session as a string — extract the id token
-            // The toString() of AWSCognitoAuthSession contains the tokens
-            val sessionStr = session.toString()
-            val idToken = sessionStr
-                .substringAfter("idToken=AWSCognitoUserPoolTokens(idToken=")
-                .substringBefore(",")
-                .trim()
-            idToken
+            val session = Amplify.Auth.fetchAuthSession() as AWSCognitoAuthSession
+            session.userPoolTokensResult.value?.idToken ?: ""
         } catch (e: Exception) {
             Timber.e(e, "AuthInterceptor: failed to fetch token")
             ""
