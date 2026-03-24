@@ -18,6 +18,7 @@ import com.signsathi.presentation.GetStartedScreen
 import com.signsathi.presentation.homeScreen.HomeScreen
 import com.signsathi.presentation.lesson.LessonScreen
 import com.signsathi.presentation.login.LoginScreen
+import com.signsathi.presentation.profile.ProfileScreen
 import com.signsathi.presentation.signUp.OtpVerificationScreen
 import com.signsathi.presentation.signUp.SignUpScreen
 import com.signsathi.presentation.splash.SplashScreen
@@ -74,10 +75,8 @@ fun AppNavigation(navController: NavHostController) {
             }
         }
         composable(Screens.Profile.route) {
-            // TODO: wire up existing Profile screen
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Profile — coming soon")
-            }
+            ProfileScreen(navController = navController)
         }
+
     }
 }

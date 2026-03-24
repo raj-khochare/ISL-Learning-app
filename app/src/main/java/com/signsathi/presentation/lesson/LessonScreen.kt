@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +56,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.signsathi.ui.theme.Background
 import com.signsathi.ui.theme.DarkGrey
 import com.signsathi.ui.theme.Orange
@@ -62,10 +64,10 @@ import com.signsathi.ui.theme.nunito
 
 // ─── Colours ──────────────────────────────────────────────────────────────────
 
-private val CorrectGreen   = Color(0xFF58CC02)
-private val WrongRed       = Color(0xFFFF4B4B)
+private val CorrectGreen = Color(0xFF58CC02)
+private val WrongRed = Color(0xFFFF4B4B)
 private val SelectedBorder = Color(0xFF1CB0F6)
-private val CardWhite      = Color.White
+private val CardWhite = Color.White
 
 // ─── Root screen ──────────────────────────────────────────────────────────────
 
@@ -87,7 +89,7 @@ fun LessonScreen(
             if (state.phase !is LessonPhase.Completed) {
                 LessonTopBar(
                     progress = state.progress,
-                    onClose  = { navController.popBackStack() }
+                    onClose = { navController.popBackStack() }
                 )
             }
 
@@ -100,22 +102,22 @@ fun LessonScreen(
                 )
 
                 is LessonPhase.Learn -> LearnPhase(
-                    state      = state,
+                    state = state,
                     onContinue = viewModel::onContinueToQuiz
                 )
 
                 is LessonPhase.Quiz,
                 is LessonPhase.Result -> QuizPhase(
-                    state          = state,
+                    state = state,
                     onChoiceSelect = viewModel::onChoiceSelected,
-                    onCheckAnswer  = viewModel::onCheckAnswer,
-                    onNext         = viewModel::onNext
+                    onCheckAnswer = viewModel::onCheckAnswer,
+                    onNext = viewModel::onNext
                 )
 
                 is LessonPhase.Completed -> CompletedPhase(
                     lessonTitle = state.lessonTitle,
-                    totalXp     = phase.totalXpEarned,
-                    onFinish    = { navController.popBackStack() }
+                    totalXp = phase.totalXpEarned,
+                    onFinish = { navController.popBackStack() }
                 )
             }
         }
@@ -137,13 +139,13 @@ private fun LessonTopBar(progress: Float, onClose: () -> Unit) {
         }
         Spacer(Modifier.width(8.dp))
         LinearProgressIndicator(
-            progress      = { progress },
-            modifier      = Modifier
+            progress = { progress },
+            modifier = Modifier
                 .weight(1f)
                 .height(14.dp)
                 .clip(RoundedCornerShape(7.dp)),
-            color         = Orange,
-            trackColor    = Color(0xFFE5E5E5)
+            color = Orange,
+            trackColor = Color(0xFFE5E5E5)
         )
         Spacer(Modifier.width(16.dp))
     }
@@ -165,18 +167,21 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text      = message,
-                style     = TextStyle(fontFamily = nunito, fontSize = 16.sp, color = DarkGrey),
+                text = message,
+                style = TextStyle(fontFamily = nunito, fontSize = 16.sp, color = DarkGrey),
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(16.dp))
             Button(
                 onClick = onRetry,
-                colors  = ButtonDefaults.buttonColors(containerColor = Orange)
+                colors = ButtonDefaults.buttonColors(containerColor = Orange)
             ) {
                 Icon(Icons.Filled.Replay, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text("Try Again", style = TextStyle(fontFamily = nunito, fontWeight = FontWeight.Bold))
+                Text(
+                    "Try Again",
+                    style = TextStyle(fontFamily = nunito, fontWeight = FontWeight.Bold)
+                )
             }
         }
     }
@@ -194,19 +199,19 @@ private fun LearnPhase(state: LessonUiState, onContinue: () -> Unit) {
     ) {
         Spacer(Modifier.height(8.dp))
         Text(
-            text  = state.lessonTitle,
+            text = state.lessonTitle,
             style = TextStyle(
                 fontFamily = nunito,
-                fontSize   = 28.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color      = DarkGrey
+                color = DarkGrey
             )
         )
         Spacer(Modifier.height(20.dp))
 
         SignVideoCard(
             videoUrl = state.videoUrl,
-            title    = state.lessonTitle,
+            title = state.lessonTitle,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(260.dp)
@@ -215,28 +220,28 @@ private fun LearnPhase(state: LessonUiState, onContinue: () -> Unit) {
         Spacer(Modifier.height(20.dp))
 
         Card(
-            modifier  = Modifier.fillMaxWidth(),
-            shape     = RoundedCornerShape(16.dp),
-            colors    = CardDefaults.cardColors(containerColor = CardWhite),
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = CardWhite),
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
-                    text  = "How to sign",
+                    text = "How to sign",
                     style = TextStyle(
                         fontFamily = nunito,
-                        fontSize   = 13.sp,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color      = Orange
+                        color = Orange
                     )
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text  = state.description.ifBlank { "Watch the video to learn this sign." },
+                    text = state.description.ifBlank { "Watch the video to learn this sign." },
                     style = TextStyle(
                         fontFamily = nunito,
-                        fontSize   = 15.sp,
-                        color      = DarkGrey,
+                        fontSize = 15.sp,
+                        color = DarkGrey,
                         lineHeight = 22.sp
                     )
                 )
@@ -246,9 +251,9 @@ private fun LearnPhase(state: LessonUiState, onContinue: () -> Unit) {
         Spacer(Modifier.weight(1f))
 
         PrimaryButton(
-            text    = "GOT IT — LET'S PRACTICE",
+            text = "GOT IT — LET'S PRACTICE",
             onClick = onContinue,
-            color   = Orange
+            color = Orange
         )
         Spacer(Modifier.height(24.dp))
     }
@@ -258,12 +263,12 @@ private fun LearnPhase(state: LessonUiState, onContinue: () -> Unit) {
 
 @Composable
 private fun QuizPhase(
-    state          : LessonUiState,
-    onChoiceSelect : (String) -> Unit,
-    onCheckAnswer  : () -> Unit,
-    onNext         : () -> Unit
+    state: LessonUiState,
+    onChoiceSelect: (String) -> Unit,
+    onCheckAnswer: () -> Unit,
+    onNext: () -> Unit
 ) {
-    val question  = state.currentQuestion ?: return
+    val question = state.currentQuestion ?: return
     val isChecked = state.isAnswerChecked
 
     Column(
@@ -279,12 +284,12 @@ private fun QuizPhase(
             QuestionType.WORD_TO_VIDEO -> "Which video shows \"${question.signTitle}\"?"
         }
         Text(
-            text      = promptText,
-            style     = TextStyle(
+            text = promptText,
+            style = TextStyle(
                 fontFamily = nunito,
-                fontSize   = 22.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color      = DarkGrey
+                color = DarkGrey
             ),
             textAlign = TextAlign.Center
         )
@@ -295,12 +300,13 @@ private fun QuizPhase(
             QuestionType.VIDEO_TO_NAME -> {
                 SignVideoCard(
                     videoUrl = question.videoUrl,
-                    title    = question.signTitle,
+                    title = question.signTitle,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
                 )
             }
+
             QuestionType.WORD_TO_VIDEO -> {
                 Box(
                     modifier = Modifier
@@ -311,12 +317,12 @@ private fun QuizPhase(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text  = question.signTitle,
+                        text = question.signTitle,
                         style = TextStyle(
                             fontFamily = nunito,
-                            fontSize   = 36.sp,
+                            fontSize = 36.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = Orange
+                            color = Orange
                         )
                     )
                 }
@@ -329,28 +335,29 @@ private fun QuizPhase(
             QuestionType.VIDEO_TO_NAME -> {
                 question.choices.forEach { choice ->
                     NameChoiceItem(
-                        choice     = choice,
+                        choice = choice,
                         isSelected = state.selectedChoiceId == choice.id,
-                        isChecked  = isChecked,
-                        isCorrect  = choice.id == question.correctChoiceId,
-                        onClick    = { onChoiceSelect(choice.id) }
+                        isChecked = isChecked,
+                        isCorrect = choice.id == question.correctChoiceId,
+                        onClick = { onChoiceSelect(choice.id) }
                     )
                     Spacer(Modifier.height(12.dp))
                 }
             }
+
             QuestionType.WORD_TO_VIDEO -> {
                 Row(
-                    modifier              = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     question.choices.forEach { choice ->
                         VideoChoiceItem(
-                            choice     = choice,
+                            choice = choice,
                             isSelected = state.selectedChoiceId == choice.id,
-                            isChecked  = isChecked,
-                            isCorrect  = choice.id == question.correctChoiceId,
-                            onClick    = { onChoiceSelect(choice.id) },
-                            modifier   = Modifier.weight(1f)
+                            isChecked = isChecked,
+                            isCorrect = choice.id == question.correctChoiceId,
+                            onClick = { onChoiceSelect(choice.id) },
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
@@ -365,17 +372,17 @@ private fun QuizPhase(
         }
 
         PrimaryButton(
-            text    = when {
-                !isChecked      -> "CHECK ANSWER"
+            text = when {
+                !isChecked -> "CHECK ANSWER"
                 state.isCorrect -> "CONTINUE"
-                else            -> "GOT IT"
+                else -> "GOT IT"
             },
             onClick = if (isChecked) onNext else onCheckAnswer,
             enabled = state.selectedChoiceId != null,
-            color   = when {
-                !isChecked      -> Orange
+            color = when {
+                !isChecked -> Orange
                 state.isCorrect -> CorrectGreen
-                else            -> WrongRed
+                else -> WrongRed
             }
         )
         Spacer(Modifier.height(24.dp))
@@ -396,18 +403,18 @@ private fun CompletedPhase(lessonTitle: String, totalXp: Int, onFinish: () -> Un
         Text("🎉", fontSize = 72.sp)
         Spacer(Modifier.height(24.dp))
         Text(
-            text  = "Lesson Complete!",
+            text = "Lesson Complete!",
             style = TextStyle(
                 fontFamily = nunito,
-                fontSize   = 28.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color      = DarkGrey
+                color = DarkGrey
             )
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text      = "You learned \"$lessonTitle\"",
-            style     = TextStyle(fontFamily = nunito, fontSize = 16.sp, color = Color.Gray),
+            text = "You learned \"$lessonTitle\"",
+            style = TextStyle(fontFamily = nunito, fontSize = 16.sp, color = Color.Gray),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(32.dp))
@@ -420,12 +427,12 @@ private fun CompletedPhase(lessonTitle: String, totalXp: Int, onFinish: () -> Un
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text  = "⭐ +$totalXp XP earned",
+                text = "⭐ +$totalXp XP earned",
                 style = TextStyle(
                     fontFamily = nunito,
-                    fontSize   = 20.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = Color(0xFF856404)
+                    color = Color(0xFF856404)
                 )
             )
         }
@@ -433,9 +440,9 @@ private fun CompletedPhase(lessonTitle: String, totalXp: Int, onFinish: () -> Un
         Spacer(Modifier.height(48.dp))
 
         PrimaryButton(
-            text    = "BACK TO HOME",
+            text = "BACK TO HOME",
             onClick = onFinish,
-            color   = Orange
+            color = Orange
         )
     }
 }
@@ -444,9 +451,9 @@ private fun CompletedPhase(lessonTitle: String, totalXp: Int, onFinish: () -> Un
 
 @Composable
 fun SignVideoCard(
-    videoUrl : String,
-    title    : String,
-    modifier : Modifier = Modifier
+    videoUrl: String,
+    title: String,
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
@@ -454,19 +461,43 @@ fun SignVideoCard(
             .background(Color(0xFFE8F4FF)),
         contentAlignment = Alignment.Center
     ) {
+
+        val isImage = videoUrl.endsWith(".jpg", true) ||
+                videoUrl.endsWith(".png", true) ||
+                videoUrl.endsWith(".jpeg", true) ||
+                videoUrl.endsWith(".webp", true)
+
+        val isVideo = videoUrl.endsWith(".mp4", true) ||
+                videoUrl.endsWith(".mkv", true) ||
+                videoUrl.endsWith(".webm", true)
         if (videoUrl.isNotBlank()) {
-            VideoPlayer(videoUrl = videoUrl, modifier = Modifier.fillMaxSize())
+            when {
+                isImage -> {
+                    AsyncImage(
+                        model = videoUrl,
+                        contentDescription = title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                isVideo -> {
+                    VideoPlayer(videoUrl = videoUrl, modifier = Modifier.fillMaxSize())
+                }
+            }
+
+
         } else {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("🤟", fontSize = 72.sp)
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text  = title,
+                    text = title,
                     style = TextStyle(
                         fontFamily = nunito,
-                        fontSize   = 16.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color      = DarkGrey
+                        color = DarkGrey
                     )
                 )
             }
@@ -479,17 +510,17 @@ fun SignVideoCard(
 @Composable
 fun VideoPlayer(videoUrl: String, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val player  = remember {
+    val player = remember {
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)))
             prepare()
             playWhenReady = true
-            repeatMode    = ExoPlayer.REPEAT_MODE_ONE
+            repeatMode = ExoPlayer.REPEAT_MODE_ONE
         }
     }
     DisposableEffect(Unit) { onDispose { player.release() } }
     AndroidView(
-        factory  = { ctx -> PlayerView(ctx).apply { this.player = player } },
+        factory = { ctx -> PlayerView(ctx).apply { this.player = player } },
         modifier = modifier
     )
 }
@@ -498,27 +529,27 @@ fun VideoPlayer(videoUrl: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun NameChoiceItem(
-    choice     : QuizChoice,
-    isSelected : Boolean,
-    isChecked  : Boolean,
-    isCorrect  : Boolean,
-    onClick    : () -> Unit
+    choice: QuizChoice,
+    isSelected: Boolean,
+    isChecked: Boolean,
+    isCorrect: Boolean,
+    onClick: () -> Unit
 ) {
     val borderColor by animateColorAsState(
-        targetValue   = when {
-            isChecked && isCorrect  -> CorrectGreen
+        targetValue = when {
+            isChecked && isCorrect -> CorrectGreen
             isChecked && isSelected -> WrongRed
-            isSelected              -> SelectedBorder
-            else                    -> Color(0xFFE5E5E5)
+            isSelected -> SelectedBorder
+            else -> Color(0xFFE5E5E5)
         },
         animationSpec = tween(200), label = "border"
     )
     val bgColor by animateColorAsState(
-        targetValue   = when {
-            isChecked && isCorrect  -> Color(0xFFD7F5B1)
+        targetValue = when {
+            isChecked && isCorrect -> Color(0xFFD7F5B1)
             isChecked && isSelected -> Color(0xFFFFDDDD)
-            isSelected              -> Color(0xFFEAF6FF)
-            else                    -> CardWhite
+            isSelected -> Color(0xFFEAF6FF)
+            else -> CardWhite
         },
         animationSpec = tween(200), label = "bg"
     )
@@ -531,21 +562,21 @@ private fun NameChoiceItem(
             .border(2.dp, borderColor, RoundedCornerShape(14.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication        = null,
-                enabled           = !isChecked
+                indication = null,
+                enabled = !isChecked
             ) { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text  = choice.label,
+            text = choice.label,
             style = TextStyle(
                 fontFamily = nunito,
-                fontSize   = 17.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
-                color      = when {
-                    isChecked && isCorrect  -> Color(0xFF2D7A00)
+                color = when {
+                    isChecked && isCorrect -> Color(0xFF2D7A00)
                     isChecked && isSelected -> WrongRed
-                    else                    -> DarkGrey
+                    else -> DarkGrey
                 }
             )
         )
@@ -556,28 +587,28 @@ private fun NameChoiceItem(
 
 @Composable
 private fun VideoChoiceItem(
-    choice     : QuizChoice,
-    isSelected : Boolean,
-    isChecked  : Boolean,
-    isCorrect  : Boolean,
-    onClick    : () -> Unit,
-    modifier   : Modifier = Modifier
+    choice: QuizChoice,
+    isSelected: Boolean,
+    isChecked: Boolean,
+    isCorrect: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val borderColor by animateColorAsState(
-        targetValue   = when {
-            isChecked && isCorrect  -> CorrectGreen
+        targetValue = when {
+            isChecked && isCorrect -> CorrectGreen
             isChecked && isSelected -> WrongRed
-            isSelected              -> SelectedBorder
-            else                    -> Color(0xFFE5E5E5)
+            isSelected -> SelectedBorder
+            else -> Color(0xFFE5E5E5)
         },
         animationSpec = tween(200), label = "videoBorder"
     )
     val bgColor by animateColorAsState(
-        targetValue   = when {
-            isChecked && isCorrect  -> Color(0xFFD7F5B1)
+        targetValue = when {
+            isChecked && isCorrect -> Color(0xFFD7F5B1)
             isChecked && isSelected -> Color(0xFFFFDDDD)
-            isSelected              -> Color(0xFFEAF6FF)
-            else                    -> Color(0xFFF5F5F5)
+            isSelected -> Color(0xFFEAF6FF)
+            else -> Color(0xFFF5F5F5)
         },
         animationSpec = tween(200), label = "videoBg"
     )
@@ -589,8 +620,8 @@ private fun VideoChoiceItem(
             .border(2.dp, borderColor, RoundedCornerShape(14.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication        = null,
-                enabled           = !isChecked
+                indication = null,
+                enabled = !isChecked
             ) { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -605,7 +636,7 @@ private fun VideoChoiceItem(
             )
         } else {
             Box(
-                modifier         = Modifier
+                modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -613,18 +644,18 @@ private fun VideoChoiceItem(
         }
         Spacer(Modifier.height(6.dp))
         Text(
-            text      = choice.label,
-            style     = TextStyle(
+            text = choice.label,
+            style = TextStyle(
                 fontFamily = nunito,
-                fontSize   = 12.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color      = when {
-                    isChecked && isCorrect  -> Color(0xFF2D7A00)
+                color = when {
+                    isChecked && isCorrect -> Color(0xFF2D7A00)
                     isChecked && isSelected -> WrongRed
-                    else                    -> DarkGrey
+                    else -> DarkGrey
                 }
             ),
-            modifier  = Modifier.padding(bottom = 8.dp),
+            modifier = Modifier.padding(bottom = 8.dp),
             textAlign = TextAlign.Center
         )
     }
@@ -634,10 +665,10 @@ private fun VideoChoiceItem(
 
 @Composable
 private fun ResultBanner(isCorrect: Boolean, xpEarned: Int) {
-    val bg      = if (isCorrect) Color(0xFFD7F5B1) else Color(0xFFFFDDDD)
-    val color   = if (isCorrect) Color(0xFF2D7A00) else WrongRed
+    val bg = if (isCorrect) Color(0xFFD7F5B1) else Color(0xFFFFDDDD)
+    val color = if (isCorrect) Color(0xFF2D7A00) else WrongRed
     val message = if (isCorrect) "Correct! +$xpEarned XP" else "Not quite — keep going!"
-    val emoji   = if (isCorrect) "🎉" else "😅"
+    val emoji = if (isCorrect) "🎉" else "😅"
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -647,12 +678,12 @@ private fun ResultBanner(isCorrect: Boolean, xpEarned: Int) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text      = "$emoji  $message",
-            style     = TextStyle(
+            text = "$emoji  $message",
+            style = TextStyle(
                 fontFamily = nunito,
-                fontSize   = 16.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color      = color
+                color = color
             ),
             textAlign = TextAlign.Center
         )
@@ -663,30 +694,30 @@ private fun ResultBanner(isCorrect: Boolean, xpEarned: Int) {
 
 @Composable
 private fun PrimaryButton(
-    text    : String,
-    onClick : () -> Unit,
-    color   : Color   = Orange,
-    enabled : Boolean = true
+    text: String,
+    onClick: () -> Unit,
+    color: Color = Orange,
+    enabled: Boolean = true
 ) {
     Button(
-        onClick  = onClick,
-        enabled  = enabled,
+        onClick = onClick,
+        enabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
-        shape  = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor         = color,
+            containerColor = color,
             disabledContainerColor = Color(0xFFE5E5E5)
         )
     ) {
         Text(
-            text  = text,
+            text = text,
             style = TextStyle(
                 fontFamily = nunito,
-                fontSize   = 16.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color      = if (enabled) Color.White else Color.Gray
+                color = if (enabled) Color.White else Color.Gray
             )
         )
     }

@@ -43,4 +43,7 @@ interface UserProgressDao {
 
     @Query("DELETE FROM user_progress WHERE userId = :userId")
     suspend fun deleteAllForUser(userId: String)
+
+    @Query("SELECT * FROM user_progress WHERE userId = :userId AND lessonId = 'STATS' LIMIT 1")
+    fun observeStats(userId: String): Flow<UserProgressEntity?>
 }

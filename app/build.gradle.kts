@@ -46,6 +46,13 @@ android {
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/**"
+            excludes += "META-INF/DEPENDENCIES"
+        }
+    }
 }
 
 dependencies {
@@ -102,4 +109,22 @@ dependencies {
 
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
+
+    // MediaPipe for hand landmark detection
+    implementation("com.google.mediapipe:tasks-vision:0.10.14")
+
+// TensorFlow Lite for sign classification
+    implementation("org.tensorflow:tensorflow-lite:2.14.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+
+// CameraX for live camera feed
+    implementation("androidx.camera:camera-core:1.3.4")
+    implementation("androidx.camera:camera-camera2:1.3.4")
+    implementation("androidx.camera:camera-lifecycle:1.3.4")
+    implementation("androidx.camera:camera-view:1.3.4")
+
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Camera permission handling in Compose
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 }
