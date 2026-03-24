@@ -21,6 +21,7 @@ data class LessonDto(
     @SerializedName("lessonTitle")   val lessonTitle: String,
     @SerializedName("lessonOrder")   val lessonOrder: Int,
     @SerializedName("xpReward")      val xpReward: Int,
+    @SerializedName("description")   val description: String = "",
     @SerializedName("videoUrl")      val videoUrl: String,
     @SerializedName("thumbnailUrl")  val thumbnailUrl: String
 )
@@ -33,4 +34,14 @@ data class UserProgressResponse(
     @SerializedName("heartsLeft")      val heartsLeft: Int,
     /** Map of lessonId -> status ("completed" | "active") */
     @SerializedName("lessonProgress")  val lessonProgress: Map<String, String>
+)
+
+data class CompleteLessonRequest(
+    @SerializedName("lessonId")  val lessonId  : String,
+    @SerializedName("xpEarned") val xpEarned  : Int
+)
+
+data class CompleteLessonResponse(
+    @SerializedName("success")  val success   : Boolean,
+    @SerializedName("totalXp")  val totalXp   : Int
 )

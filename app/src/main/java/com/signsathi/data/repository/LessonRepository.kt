@@ -23,4 +23,6 @@ interface LessonRepository {
      * Call this on pull-to-refresh or on first app open.
      */
     suspend fun refresh(userId: String)
+
+    suspend fun completeLesson(userId: String, lessonId: String, xpEarned: Int): Result<Int>
 }

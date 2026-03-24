@@ -10,11 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.signsathi.presentation.GetStartedScreen
 import com.signsathi.presentation.homeScreen.HomeScreen
+import com.signsathi.presentation.lesson.LessonScreen
 import com.signsathi.presentation.login.LoginScreen
 import com.signsathi.presentation.signUp.OtpVerificationScreen
 import com.signsathi.presentation.signUp.SignUpScreen
@@ -49,12 +51,14 @@ fun AppNavigation(navController: NavHostController) {
             OtpVerificationScreen(navController = navController)
         }
 
-//        composable(
-//            route = Screens.Lesson.route,
-//            arguments = listOf(navArgument("lessonId") { type = NavType.StringType })
-//        ) {
-//            LessonScreen(navController = navController)
-//        }
+        composable(
+            route     = Screens.Lesson.route,
+            arguments = listOf(
+                navArgument("lessonId") { type = NavType.StringType }
+            )
+        ) {
+            LessonScreen(navController = navController)
+        }
 
 // Placeholder screens for bottom nav tabs
         composable(Screens.Practice.route) {

@@ -25,6 +25,7 @@ data class LessonNodeEntity(
     val unitId: String,
     val lessonId: String,
     val lessonTitle: String,
+    val description  : String = "",
     val lessonOrder: Int,
     val xpReward: Int,
     val videoUrl: String,

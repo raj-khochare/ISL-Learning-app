@@ -14,7 +14,7 @@ import com.signsathi.data.local.entity.UserProgressEntity
         LessonNodeEntity::class,
         UserProgressEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true   // generates a schema JSON file — useful for migration tracking
 )
 abstract class AppDatabase : RoomDatabase() {

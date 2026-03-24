@@ -5,17 +5,24 @@ import androidx.lifecycle.viewModelScope
 import com.amplifyframework.kotlin.core.Amplify
 import com.signsathi.data.model.LessonNode
 import com.signsathi.data.model.LessonUnit
+import com.signsathi.data.model.NodeState
 import com.signsathi.data.model.UserProgress
 import com.signsathi.data.repository.LessonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+
+sealed class HomeNavEvent {
+    data class NavigateToLesson(val lessonId: String) : HomeNavEvent()
+}
 
 // ─── UI state ─────────────────────────────────────────────────────────────────
 
@@ -38,6 +45,9 @@ class HomeViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+
+    private val _navEvents = MutableSharedFlow<HomeNavEvent>()
+    val navEvents = _navEvents.asSharedFlow()
 
     init {
         loadHome()
@@ -84,6 +94,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun onLessonClick(node: LessonNode) {
+        // Only allow tapping Active or ActiveContinue nodes
+        if (node.state is NodeState.Locked) return
+        viewModelScope.launch {
+            _navEvents.emit(HomeNavEvent.NavigateToLesson(node.id))
+        }
+    }
+
     private suspend fun refresh(userId: String) {
         try {
             lessonRepository.refresh(userId)
@@ -99,10 +117,5 @@ class HomeViewModel @Inject constructor(
             Timber.e(e, "HomeViewModel: failed to get current user")
             null
         }
-    }
-
-    fun onLessonClick(node: LessonNode) {
-        // TODO: navigate to lesson screen in Phase 3
-        Timber.d("HomeViewModel: lesson tapped — ${node.id} (${node.title})")
     }
 }

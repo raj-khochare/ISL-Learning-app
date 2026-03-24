@@ -1,5 +1,6 @@
 package com.signsathi.data.mapper
 
+
 import com.signsathi.data.local.entity.LessonNodeEntity
 import com.signsathi.data.local.entity.LessonUnitEntity
 import com.signsathi.data.local.entity.UserProgressEntity
@@ -29,6 +30,7 @@ fun LessonDto.toEntity(unitId: String): LessonNodeEntity =
         unitId       = unitId,
         lessonId     = lessonId,
         lessonTitle  = lessonTitle,
+        description  = description,
         lessonOrder  = lessonOrder,
         xpReward     = xpReward,
         videoUrl     = videoUrl,
@@ -97,6 +99,8 @@ fun UnitWithLessons.toDomain(progressMap: Map<String, String>): LessonUnit {
         LessonNode(
             id        = entity.lessonId,
             title     = entity.lessonTitle,
+            description = entity.description,
+            videoUrl = entity.videoUrl,
             state     = nodeState,
             xpReward  = entity.xpReward
         )

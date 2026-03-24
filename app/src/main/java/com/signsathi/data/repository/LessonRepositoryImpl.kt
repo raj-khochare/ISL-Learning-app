@@ -2,6 +2,7 @@ package com.signsathi.data.repository
 
 import com.signsathi.data.local.dao.LessonDao
 import com.signsathi.data.local.dao.UserProgressDao
+import com.signsathi.data.local.entity.UserProgressEntity
 import com.signsathi.data.mapper.toDomain
 import com.signsathi.data.mapper.toEntities
 import com.signsathi.data.mapper.toEntity
@@ -9,6 +10,7 @@ import com.signsathi.data.mapper.toUserProgress
 import com.signsathi.data.model.LessonUnit
 import com.signsathi.data.model.UserProgress
 import com.signsathi.data.remote.LessonApiService
+import com.signsathi.data.remote.dto.CompleteLessonRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -110,6 +112,42 @@ class LessonRepositoryImpl @Inject constructor(
             Timber.d("LessonRepository: refreshed progress for $userId")
         } catch (e: Exception) {
             Timber.e(e, "LessonRepository: failed to refresh progress")
+        }
+    }
+
+    override suspend fun completeLesson(
+        userId   : String,
+        lessonId : String,
+        xpEarned : Int
+    ): Result<Int> {
+        return try {
+            val response = api.completeLesson(
+                CompleteLessonRequest(lessonId = lessonId, xpEarned = xpEarned)
+            )
+            // Update local Room immediately
+            userProgressDao.insert(
+                UserProgressEntity(
+                    userId = userId,
+                    lessonId = lessonId,
+                    status = "completed",
+                    isSynced = true
+                )
+            )
+            val currentStats = userProgressDao.getStatsRow(userId)
+            userProgressDao.insert(
+                UserProgressEntity(
+                    userId     = userId,
+                    lessonId   = "STATS",
+                    xp         = response.totalXp,
+                    streakDays = currentStats?.streakDays ?: 0,
+                    heartsLeft = currentStats?.heartsLeft ?: 5,
+                    isSynced   = true
+                )
+            )
+            Result.success(response.totalXp)
+        } catch (e: Exception) {
+            Timber.e(e, "LessonRepository: completeLesson failed")
+            Result.failure(e)
         }
     }
 }

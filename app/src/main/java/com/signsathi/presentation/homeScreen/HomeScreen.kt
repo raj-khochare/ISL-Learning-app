@@ -34,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -51,6 +52,7 @@ import com.signsathi.data.model.LessonNode
 import com.signsathi.data.model.LessonUnit
 import com.signsathi.data.model.NodeState
 import com.signsathi.data.model.UserProgress
+import com.signsathi.navigationGraph.Screens
 import com.signsathi.presentation.components.BottomNavBar
 import com.signsathi.ui.theme.Background
 import com.signsathi.ui.theme.DarkGrey
@@ -81,6 +83,17 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Consume one-shot navigation events
+    LaunchedEffect(Unit) {
+        viewModel.navEvents.collect { event ->
+            when (event) {
+                is HomeNavEvent.NavigateToLesson ->
+                    navController.navigate(Screens.Lesson.createRoute(event.lessonId))
+            }
+        }
+    }
+
     Scaffold(
         bottomBar = { BottomNavBar(navController = navController) },
         containerColor = Background

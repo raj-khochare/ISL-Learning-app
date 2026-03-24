@@ -31,6 +31,8 @@ sealed class NodeState {
 data class LessonNode(
     val id: String,
     val title: String,
+    val description : String,
+    val videoUrl : String,
     val state: NodeState,
     val xpReward: Int = 10
 )
