@@ -32,20 +32,7 @@ android {
         }
     }
 
-    signingConfigs {
-        create("release") {
-            storeFile = file("D:\\KEYS\\signsathi-release-key.jks")
-            storePassword = project.findProperty("MY_KEYSTORE_PASSWORD") as String
-            keyPassword = project.findProperty("MY_KEY_PASSWORD") as String
-            keyAlias = "signsathi"
-        }
-    }
 
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
 
     applicationVariants.all {
         outputs.all {

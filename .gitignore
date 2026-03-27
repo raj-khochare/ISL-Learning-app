@@ -37,8 +37,6 @@ amplifytools.xcconfig
 **.sample
 #amplify-do-not-edit-end
 
-# Secrets
-gradle.properties
 
 # APK files
 *.apk
