@@ -1,0 +1,13 @@
+[
+  {
+    "Action": [
+      "dynamodb:Query",
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:UpdateItem"
+    ],
+    "Resource": [
+      "arn:aws:dynamodb:ap-south-1:*:table/signsathi-user-progress"
+    ]
+  }
+]
