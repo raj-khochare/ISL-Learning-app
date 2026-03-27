@@ -17,7 +17,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,6 +29,29 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("D:\\KEYS\\signsathi-release-key.jks")
+            storePassword = project.findProperty("MY_KEYSTORE_PASSWORD") as String
+            keyPassword = project.findProperty("MY_KEY_PASSWORD") as String
+            keyAlias = "signsathi"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+
+    applicationVariants.all {
+        outputs.all {
+            (this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl)?.let { output ->
+                output.outputFileName = "SignSathi-${name}-${versionName}.apk"
+            }
         }
     }
     compileOptions {
