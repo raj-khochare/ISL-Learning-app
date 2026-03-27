@@ -18,6 +18,7 @@ import com.signsathi.presentation.GetStartedScreen
 import com.signsathi.presentation.homeScreen.HomeScreen
 import com.signsathi.presentation.lesson.LessonScreen
 import com.signsathi.presentation.login.LoginScreen
+import com.signsathi.presentation.practice.PracticeScreen
 import com.signsathi.presentation.profile.ProfileScreen
 import com.signsathi.presentation.signUp.OtpVerificationScreen
 import com.signsathi.presentation.signUp.SignUpScreen
@@ -63,10 +64,7 @@ fun AppNavigation(navController: NavHostController) {
 
 // Placeholder screens for bottom nav tabs
         composable(Screens.Practice.route) {
-            // TODO: build Practice screen
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Practice — coming soon")
-            }
+            PracticeScreen()
         }
         composable(Screens.Signs.route) {
             // TODO: wire up existing Signs screen
